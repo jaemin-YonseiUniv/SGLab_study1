@@ -50,6 +50,8 @@ dpp = -wp*dp2 + wp*wo*Kp*(Po - 1.5*E*V2.*sin(d2)/Xg);
 
 figure(2)
 surf(d2,dp2,dpp);
+figure(4)
+surf(d2,dp2,dpp);
 hold all;
 plot3(d2(1,:),zeros(size(d2(1,:))),zeros(size(d2(1,:))),'Linewidth',2,'Color','black');
 
@@ -74,6 +76,14 @@ surf(d2,dp2,0.*d2+0.*dp2,'FaceColor','red');
 
 ysize = size(y);
 plot3(y(:,1),y(:,2),zeros(ysize(1),ysize(1)),'Color','b','Linewidth',2)
+
+d2 = y(:,1);
+dp2 = y(:,2);
+V2 = (1.5*Kq*E*cos(d2) - Xg + sqrt((Xg-1.5*Kq*E*cos(d2)).^2 + 6*Kq*Xg*(Vo + Kq*Qo)))/3/Kq;
+dpp = -wp*dp2 + wp*wo*Kp*(Po - 1.5*E*V2.*sin(d2)/Xg);
+figure(4)
+hold all;
+plot3(d2,dp2,dpp);
 
 % E = E/0.6;
 % wp = 2*pi*0.2;
