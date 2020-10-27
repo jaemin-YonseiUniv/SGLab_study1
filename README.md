@@ -3,6 +3,7 @@
 
 *********아래의 논문을 참고하여 공부를 진행
 *********(Review following paper for academic reason)
+
 D. Pan, X. Wang, F. Liu and R. Shi, "Transient Stability of Voltage-Source Converters With Grid-Forming Control: A Design-Oriented Study," in IEEE Journal of Emerging and Selected Topics in Power Electronics, vol. 8, no. 2, pp. 1019-1033, June 2020, doi: 10.1109/JESTPE.2019.2946310.
 
 사용법
