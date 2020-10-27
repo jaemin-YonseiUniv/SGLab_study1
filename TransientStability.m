@@ -65,13 +65,13 @@ plot(d,zeros(1,max(size(d))),'--');
 
 % E = 1.0 pu case
 wp = 2*pi*0.4;%[rad/s]
-[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],100,wp,Kp,Kq,Po,Qo,Vo,E,Xg,wo);
+[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],50,wp,Kp,Kq,Po,Qo,Vo,E,Xg,wo);
 
 figure(3)
 surf(d,dp,dpp,'FaceColor','flat');
 
 % E = 0.6 pu case
-[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],100,wp,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo);
+[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],50,wp,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo);
 
 figure(3)
 hold all;
@@ -80,13 +80,39 @@ surf(d,dp,dpp,'FaceColor','flat');
 % add xy plane(delta_double_prime = 0)
 surf(d,dp,zeros(size(d)),'FaceColor','r');
 
-% Caculate "Response Trajectory"
+%% Caculate "Response Trajectory"
+% Only wp exist
 tspan = [0 5];
 y0 = [0.54; 0];
 [t,y] = ode45(@(t,y) ang_stable(t,y,wp,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo), tspan, y0);
 
 figure(1)
+hold all;
 plot(y(:,1),y(:,2),'Color','b','Linewidth',2)
+
+% Both wp, wq exist
+wq = 2*pi*0.3;
+tspan = [0 5];
+x0 = [0.54; 0; 1.0];
+[t,x] = ode45(@(t,x) ang_stable_both(t,x,wp,wq,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo), tspan, x0);
+
+figure(1)
+hold all;
+plot(x(:,1),x(:,2),'Color','r','Linewidth',2)
+
+% Contingency clear event
+tspan = [0 5];
+z0 = [0.54; 0; 1.0];
+E2 = 0.5;
+E3 = 0.6;
+tfault = 1.0;
+tclear = 1.5;
+[t,z] = ang_stable_both_Clear(wp,wq,Kp,Kq,Po,Qo,Vo,E,Xg,wo,E2,E3,tfault,tclear,tspan,z0);
+
+figure(1)
+hold all;
+plot(z(:,1),z(:,2),'Color','g','Linewidth',2)
+
 
 figure(3)
 hold all;

@@ -33,6 +33,8 @@ Xg = Xg_r/Zbase;
 % wofilter input unit => lb,ub in radian, Kp~wo in pu base
 % wofilter output unit => d in radian, dp in rad/s
 
+% y_cal = ang_init(Kp,Po,Vo,E,Xg,wo); Didn't Completed yet
+
 % E = 1.0pu case
 [d,dp,V] = wofilter([0 pi],1000,Kp,Kq,Po,Qo,Vo,E,Xg,wo);
 
@@ -63,39 +65,51 @@ plot(d,zeros(1,max(size(d))),'--');
 
 % E = 1.0 pu case
 wp = 2*pi*0.4;%[rad/s]
-[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],10000,wp,Kp,Kq,Po,Qo,Vo,E,Xg,wo);
+[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],50,wp,Kp,Kq,Po,Qo,Vo,E,Xg,wo);
 
 figure(3)
 surf(d,dp,dpp,'FaceColor','flat');
-figure(4)
-plot(d,V,'Color','k','Linewidth',1.5);
 
 % E = 0.6 pu case
-[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],10000,wp,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo);
+[d,dp,dpp,V] = wtfilter([0 pi],[-10,10],50,wp,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo);
 
 figure(3)
 hold all;
 surf(d,dp,dpp,'FaceColor','flat');
 
-% Caculate "Response Trajectory"
+% add xy plane(delta_double_prime = 0)
+surf(d,dp,zeros(size(d)),'FaceColor','r');
+
+%% Caculate "Response Trajectory"
+% Only wp exist
 tspan = [0 5];
 y0 = [0.54; 0];
 [t,y] = ode45(@(t,y) ang_stable(t,y,wp,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo), tspan, y0);
 
 figure(1)
+hold all;
 plot(y(:,1),y(:,2),'Color','b','Linewidth',2)
+
+% Both wp, wq exist
+wq = 2*pi*0.3;
+tspan = [0 5];
+x0 = [0.54; 0; 1.0];
+[t,x] = ode45(@(t,x) ang_stable_both(t,x,wp,wq,Kp,Kq,Po,Qo,Vo,0.6,Xg,wo), tspan, x0);
+
+figure(1)
+hold all;
+plot(x(:,1),x(:,2),'Color','r','Linewidth',2)
+
+% Contingency clear event
+tspan = [0 50];
+z0 = [0.54; 0; 1.0];
+[t,z] = ang_stable_both_Clear(wp,wq,Kp,Kq,Po,Qo,Vo,E,Xg,wo,0.5,0.8,1.0,1.,tspan,z0);
+
+figure(1)
+hold all;
+plot(z(:,1),z(:,2),'Color','g','Linewidth',2)
+
 
 figure(3)
 hold all;
-plot3(d2(1,:),zeros(size(d2(1,:))),zeros(size(d2(1,:))),'Linewidth',2,'Color','b');
-
-% ysize = size(y);
-% plot3(y(:,1),y(:,2),zeros(ysize(1),ysize(1)),'Color','b','Linewidth',2)
-% 
-% d2 = y(:,1);
-% dp2 = y(:,2);
-% V2 = (1.5*Kq*E*cos(d2) - Xg + sqrt((Xg-1.5*Kq*E*cos(d2)).^2 + 6*Kq*Xg*(Vo + Kq*Qo)))/3/Kq;
-% dpp = -wp*dp2 + wp*wo*Kp*(Po - 1.5*E*V2.*sin(d2)/Xg);
-% figure(4)
-% hold all;
-% plot3(d2,dp2,dpp);
+plot3(d(1,:),zeros(size(d(1,:))),zeros(size(d(1,:))),'Linewidth',2,'Color','k');

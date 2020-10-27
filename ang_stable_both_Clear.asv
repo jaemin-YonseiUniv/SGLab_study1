@@ -1,0 +1,20 @@
+function [t,z] = ang_stable_both_Clear(wp,wq,Kp,Kq,Po,Qo,Vo,E,Xg,wo,E2,E3,tfault,tclear,tspan,z0)
+
+    tspan1 = [tspan(0) tfault];
+    tspan2 = [tfault tclear];
+    tspan3 = [tclear tspan(1)];
+    x01 = z0;
+    [t1,x1] = ode45(@(t,x) ang_stable_both(t,x,wp,wq,Kp,Kq,Po,Qo,Vo,E,Xg,wo), tspan1, x01);
+    
+    x01size = size(x01);
+    x02 = x01(x01size(1),:);
+    [t2,x2] = ode45(@(t,x) ang_stable_both(t,x,wp,wq,Kp,Kq,Po,Qo,Vo,E,Xg,wo), tspan2, x02);
+    
+    x02size = size(x02);
+    x03 = x02(x02size(1),:);
+    [t3,x3] = ode45(@(t,x) ang_stable_both(t,x,wp,wq,Kp,Kq,Po,Qo,Vo,E,Xg,wo), tspan3, x03);
+    
+    t = [t1;t2;t3];
+    
+    
+end
